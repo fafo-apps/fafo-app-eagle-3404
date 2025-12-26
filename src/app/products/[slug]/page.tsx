@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { getProductBySlug } from "@/app/db/repositories/ProductsRepository";
+import { AddToCart } from "@/components/AddToCart";
 
 function formatPrice(cents: number, currency: string) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(cents / 100);
@@ -53,22 +53,5 @@ export default async function ProductPage({ params }: { params: { slug: string }
         </div>
       </div>
     </div>
-  );
-}
-
-function AddToCart({ slug, name, price_cents, currency, image_url }: { slug: string; name: string; price_cents: number; currency: string; image_url?: string }) {
-  // client hydration free: simple link to cart with params could work, but here a form posts to client cart via JS we add below
-  return (
-    <form action="#" onSubmit={(e) => {
-      e.preventDefault();
-      const raw = localStorage.getItem("cart");
-      const cart = raw ? JSON.parse(raw) : { items: [] as any[] };
-      const existing = cart.items.find((i: any) => i.slug === slug);
-      if (existing) existing.qty += 1; else cart.items.push({ slug, name, price_cents, currency, image_url, qty: 1 });
-      localStorage.setItem("cart", JSON.stringify(cart));
-      window.dispatchEvent(new Event("cart:updated"));
-    }}>
-      <button type="submit" className="w-full rounded-full bg-zinc-900 px-6 py-3 text-white hover:bg-zinc-800">Add to cart</button>
-    </form>
   );
 }
